@@ -5,19 +5,21 @@ import java.util.Comparator;
 public class Foobar {
     public static void main(String []args){
 //        System.out.println(122 % 123);
-        System.out.println(solution("123", "2342324223"));
+        System.out.println(solution("12312314231234","434562436456234563"));
     }
 
     //    Problem #4
     /*  [1,1]   - 0     [4,7] - 0       [12,5]
-        [2,1]   - 1     [4,3] - 1       [7,5]
-        [2,3]   - 2     [1,3] - 2       [2,5]
-        [2,5]   - 3     [1,2] - 3       [2,3]
-        [7,5]           [1,1] - 4       [2,1]
-                                        [1,1]
+        [2,1]   - 1     [4,3] - 1       [7,5] - 1
+        [2,3]   - 2     [1,3] - 2       [2,5] - 2
+        [2,5]   - 3     [1,2] - 3       [2,3] - 3
+        [7,5]           [1,1] - 4       [2,1] - 4
+                                        [1,1] - 5
 
         problem cases:
         [6666,666]
+        ["123", "2342324223"]
+        ["12312314231234","434562436456234563"]
 
         impossible:
         [5,0]
@@ -27,47 +29,64 @@ public class Foobar {
 
     */
     public static String solution(String x, String y) {
-        long generations = 0;
         BigInteger xInt = new BigInteger(x);
         BigInteger yInt = new BigInteger(y);
 
-        if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
-            return String.valueOf(generations);
-        if (xInt.equals(BigInteger.ZERO)
-                || yInt.equals(BigInteger.ZERO)
-                || (xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-                || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE)))
-            return "impossible";
+        return replicate(xInt, yInt, BigInteger.ZERO);
 
-        // start from the final value and work your way down
-        while (true) {
-            if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
-                return String.valueOf(generations);
-
-            if ((xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-                    || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
-                int i = 0;
-            } else {
-                int i = 0;
-            }
-
-            if ((!xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-                    || (!yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
-                int comparison = xInt.compareTo(yInt);
-                if (comparison == 1) {
-                    xInt = xInt.subtract(yInt);
-                } else {
-                    yInt = yInt.subtract(xInt);
-                }
-                generations++;
-            } else
-                return "impossible";
-        }
+//        if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
+//            return String.valueOf(generations);
+//        if (xInt.equals(BigInteger.ZERO)
+//                || yInt.equals(BigInteger.ZERO)
+//                || (xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
+//                || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE)))
+//            return "impossible";
+//
+//        // start from the final value and work your way down
+//        while (true) {
+//            if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
+//                return String.valueOf(generations);
+//
+//            if ((xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
+//                    || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
+//                int i = 0;
+//            } else {
+//                int i = 0;
+//            }
+//
+//            if ((!xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
+//                    || (!yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
+//                int comparison = xInt.compareTo(yInt);
+//                if (comparison == 1) {
+//                    xInt = xInt.subtract(yInt);
+//                } else {
+//                    yInt = yInt.subtract(xInt);
+//                }
+//                generations++;
+//            } else
+//                return "impossible";
+//        }
     }
 
-//    public static String replicate() {
-//
-//    }
+    public static String replicate(BigInteger x, BigInteger y, BigInteger gen) {
+        if(gen.equals("11111")) {
+            int i = 0;
+        }
+        if (x.equals(BigInteger.ONE) || y.equals(BigInteger.ONE))
+            return String.valueOf(gen.add(x.max(y).subtract(x.min(y))));
+        else if (x.mod(y).equals(BigInteger.ZERO)
+                || y.mod(x).equals(BigInteger.ZERO))
+            return "impossible";
+        else {
+            int comparison = x.compareTo(y);
+            if (comparison == 1) {
+                x = x.subtract(y);
+            } else {
+                y = y.subtract(x);
+            }
+            return replicate(x, y, gen.add(BigInteger.ONE));
+        }
+    }
 
 
     // Problem #3
