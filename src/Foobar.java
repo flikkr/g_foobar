@@ -1,13 +1,42 @@
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
 
 public class Foobar {
     public static void main(String []args){
-//        System.out.println(122 % 123);
-        System.out.println(solution("12312314231234","434562436456234563"));
+        System.out.println(solution(8));
     }
 
+    //    Problem #5
+//    -- Java cases --
+//    Input:
+//            Solution.solution(3)
+//    Output:
+//            1
+//
+//    Input:
+//            Solution.solution(200)
+//    Output:
+//            487067745
+    static int iterations = 0;
+    public static int solution(int n) {
+        checkNextLevel(n, 1);
+        return iterations;
+    }
+    public static int checkNextLevel(int bricks, int level) {
+        int nextLevelBricks = 0;
+
+        // can break it down further?
+        while (bricks >= 3 && nextLevelBricks <= bricks - 3) {
+            bricks--;
+            nextLevelBricks = checkNextLevel(++nextLevelBricks, level + 1);
+        }
+
+        if (level != 1)iterations++;
+        // go back up and check
+        return bricks;
+    }
     //    Problem #4
     /*  [1,1]   - 0     [4,7] - 0       [12,5]
         [2,1]   - 1     [4,3] - 1       [7,5] - 1
@@ -28,64 +57,43 @@ public class Foobar {
         [5,5]
 
     */
+
     public static String solution(String x, String y) {
-        BigInteger xInt = new BigInteger(x);
-        BigInteger yInt = new BigInteger(y);
-
-        return replicate(xInt, yInt, BigInteger.ZERO);
-
-//        if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
-//            return String.valueOf(generations);
-//        if (xInt.equals(BigInteger.ZERO)
-//                || yInt.equals(BigInteger.ZERO)
-//                || (xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-//                || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE)))
-//            return "impossible";
-//
-//        // start from the final value and work your way down
-//        while (true) {
-//            if (xInt.equals(BigInteger.ONE) && yInt.equals(BigInteger.ONE))
-//                return String.valueOf(generations);
-//
-//            if ((xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-//                    || (yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
-//                int i = 0;
-//            } else {
-//                int i = 0;
-//            }
-//
-//            if ((!xInt.mod(yInt).equals(BigInteger.ZERO) && !yInt.equals(BigInteger.ONE))
-//                    || (!yInt.mod(xInt).equals(BigInteger.ZERO) && !xInt.equals(BigInteger.ONE))) {
-//                int comparison = xInt.compareTo(yInt);
-//                if (comparison == 1) {
-//                    xInt = xInt.subtract(yInt);
-//                } else {
-//                    yInt = yInt.subtract(xInt);
-//                }
-//                generations++;
-//            } else
-//                return "impossible";
-//        }
+        try {
+            return replicate(new BigInteger(x), new BigInteger(y), BigInteger.ZERO);
+        } catch (IllegalStateException ise) {
+            return "impossible";
+        }
     }
 
+    // Recursive function to calculate the number of generations required
     public static String replicate(BigInteger x, BigInteger y, BigInteger gen) {
-        if(gen.equals("11111")) {
-            int i = 0;
-        }
+        // base case that checks if either x or y is one, then calculates how much to add to gen
         if (x.equals(BigInteger.ONE) || y.equals(BigInteger.ONE))
             return String.valueOf(gen.add(x.max(y).subtract(x.min(y))));
+            // if x or y is equally divisble by the other, throw exception
         else if (x.mod(y).equals(BigInteger.ZERO)
                 || y.mod(x).equals(BigInteger.ZERO))
-            return "impossible";
+            throw new IllegalStateException();
         else {
-            int comparison = x.compareTo(y);
-            if (comparison == 1) {
-                x = x.subtract(y);
+            BigInteger quotient;
+            if (x.compareTo(y) == 1) {
+                quotient = calcQuotient(x, y);
+                x = x.subtract(quotient.multiply(y));
             } else {
-                y = y.subtract(x);
+                quotient = calcQuotient(y, x);
+                y = y.subtract(quotient.multiply(x));
             }
-            return replicate(x, y, gen.add(BigInteger.ONE));
+            return replicate(x, y, gen.add(quotient));
         }
+    }
+
+    // Calculate quotient and remainder between two numbers
+    public static BigInteger calcQuotient(BigInteger dividend, BigInteger divisor) {
+        BigInteger[] quotient = dividend.divideAndRemainder(divisor);
+        // check if remainder is zero, which means the quotient will always be zero
+        if (quotient[1].equals(BigInteger.ZERO)) throw new IllegalStateException();
+        return quotient[0];
     }
 
 
